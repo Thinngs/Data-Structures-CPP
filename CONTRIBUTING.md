@@ -37,6 +37,6 @@ For multi-configuration generators, use `cmake --build build --config Debug` and
 2. Include tests for normal, empty, boundary, and failure cases where relevant.
 3. Describe the algorithm, complexity, ownership rules, and any deviations from the textbook.
 4. Run the tests and formatting checks.
-5. Open a Pull Request; wait for CI to pass and for review before merging.
+5. For external contributions, open a Pull Request for review. The maintainer verifies changes locally before merging. The maintainer may push tested updates directly.
 
 By contributing, you agree that your submitted contribution is licensed under the repository's `AGPL-3.0-only` license unless an explicit compatible arrangement is agreed.
