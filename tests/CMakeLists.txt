@@ -1,0 +1,3 @@
+add_executable(dscpp_smoke_test smoke_test.cpp)
+target_link_libraries(dscpp_smoke_test PRIVATE DataStructuresCPP::data_structures)
+add_test(NAME dscpp_smoke_test COMMAND dscpp_smoke_test)
