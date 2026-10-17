@@ -30,7 +30,7 @@ A beginner-friendly C++ data structures library built from scratch without STL c
 ├── src/           # .cpp implementations / 实现
 ├── tests/         # Tests / 测试
 ├── examples/      # Usage examples / 使用示例
-├── .github/       # CI and contribution templates
+├── .github/       # Contribution templates
 └── CMakeLists.txt # CMake project
 ```
 
@@ -53,7 +53,7 @@ ctest --test-dir build --output-on-failure
 ## Contributing / 参与贡献
 
 请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 和 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)。
-代码变更以 Pull Request 提交，并附带必要的测试与复杂度说明。
+维护者在本地开发、编译和测试，确认改动后再提交 GitHub。外部贡献建议通过 Pull Request 提交，并附带必要的测试与复杂度说明。
 
 ## License / 许可证
 
