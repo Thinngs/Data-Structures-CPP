@@ -1,145 +1,166 @@
 # Data-Structures-CPP
 
-A beginner-friendly collection of data structures implemented from scratch in C++17, without relying on STL containers.
+A beginner-friendly collection of data structures implemented from scratch in C++17, without relying on STL containers for the underlying storage.
 
-一个面向数据结构初学者的 C++17 开源代码库：从底层实现常见数据结构，注重**原理清晰、代码易读、接口可复用**。
+面向初学者的 C++17 数据结构开源代码库。遵循教材的抽象数据类型（ADT）与基本算法思想，注重**实现原理清晰、接口统一、代码易读、方便复用**。
 
 ## 项目目标 / Goals
 
-- **从零实现**：使用动态数组、指针等基础语言特性自行实现数据结构，不使用 `std::vector`、`std::list` 等容器替代核心实现。
-- **教材为主**：以严蔚敏、吴伟民《数据结构（C语言版）》的抽象数据类型与算法思想为主要依据，用 C++17 重新实现。
-- **便于学习**：保留容易理解的操作过程；函数附有简短的中英双语说明与时间复杂度。
-- **方便复用**：优先使用 `template <typename T>` 编写通用数据结构，避免与具体业务类型耦合。
-- **保持精简**：主要维护 `include/` 与 `src/`，在本地编译、验证后提交稳定代码。
+- **从零实现 / From scratch**：使用动态数组和指针实现基本存储结构，不使用 `std::vector`、`std::list`、`std::stack`、`std::queue` 等现成容器代替核心实现。
+- **通用模板 / Generic templates**：使用 `template <typename T>`，避免绑定习题中的特定数据类型。
+- **教材导向 / Textbook-oriented**：优先参考严蔚敏、吴伟民《数据结构（C语言版）》的概念、术语和基本操作。
+- **易于学习 / Readability**：统一命名、1-based 线性表位序，并为函数提供简短的中英双语说明与时间复杂度。
 
-> **说明 / Note:** 不依赖 STL **容器**不等于完全禁用 C++ 标准库；必要的标准语言设施和基础库功能可以使用。
+> 不使用 STL 容器不等于禁用所有 C++ 标准库功能。/ Avoiding STL containers does not mean avoiding the entire C++ standard library.
 
 ## 项目结构 / Structure
 
 ```text
 Data-Structures-CPP/
 ├── include/
-│   ├── sequential_list.h       # 顺序表接口 / Sequential list
-│   └── singly_linked_list.h    # 单链表接口 / Singly linked list
+│   ├── sequential_list.h
+│   ├── singly_linked_list.h
+│   ├── circular_linked_list.h
+│   ├── doubly_linked_list.h
+│   ├── doubly_circular_linked_list.h
+│   ├── stack.h
+│   └── queue.h
 ├── src/
-│   ├── sequential_list.cpp     # 顺序表模板实现
-│   └── singly_linked_list.cpp  # 单链表模板实现
-├── CMakeLists.txt              # 可选本地构建 / Optional local build
+│   ├── sequential_list.cpp
+│   ├── singly_linked_list.cpp
+│   ├── circular_linked_list.cpp
+│   ├── doubly_linked_list.cpp
+│   ├── doubly_circular_linked_list.cpp
+│   ├── stack.cpp
+│   └── queue.cpp
+├── CMakeLists.txt
 ├── .gitignore
 ├── LICENSE
 └── README.md
 ```
 
-## 实现进度 / Implementations
+`include/` 提供公开接口，`src/` 提供模板实现。/ Public declarations live in `include/`; template implementations live in `src/`.
 
-| 数据结构 / Data structure | 文件 / Files | 状态 / Status |
+## 已实现的数据结构 / Implementations
+
+| 数据结构 / Data structure | 类模板 / Class template | 底层设计 / Design |
 | --- | --- | --- |
-| 顺序表 / Sequential List | `sequential_list.h` · `sequential_list.cpp` | 已实现 / Implemented |
-| 单链表 / Singly Linked List | `singly_linked_list.h` · `singly_linked_list.cpp` | 已实现 / Implemented |
+| 顺序表 / Sequential List | `SequentialList<T>` | 动态数组；初始容量 4，按 4 递增 |
+| 单链表 / Singly Linked List | `SinglyLinkedList<T>` | 带头结点、尾指针；非循环 |
+| 循环单链表 / Circular Linked List | `CircularLinkedList<T>` | 带头结点、尾指针；尾结点指回头结点 |
+| 双链表 / Doubly Linked List | `DoublyLinkedList<T>` | 带头结点、尾指针；非循环、双向就近查找 |
+| 双向循环链表 / Doubly Circular Linked List | `DoublyCircularLinkedList<T>` | 带头结点；头尾双向成环、双向就近查找 |
+| 顺序栈 / Stack | `Stack<T>` | 固定容量 100，后进先出（LIFO） |
+| 循环队列 / Queue | `Queue<T>` | 默认容量 8，容量不足时翻倍，先进先出（FIFO） |
 
-其他数据结构将随学习进度逐步加入。 / More data structures will be added progressively.
+### 基本接口 / Core APIs
 
-### 顺序表 / Sequential List
+**线性表 / Linear lists**：五种线性表都支持 `ClearList()`、`ListEmpty()`、`ListLength()`、`GetElem(i, value)`、`ListInsert(i, value)`、`ListDelete(i, value)`。
 
-- 使用动态数组存储元素，支持 `int`、`double`、`std::string` 等满足类型要求的数据类型。
-- **逻辑位序从 1 开始**，与教材的线性表操作习惯一致。
-- 初始容量为 `4`，空间不足时每次增加 `4` 个元素。
-- 暂不支持复制或移动顺序表对象。
+- `SequentialList<T>` 还提供 `Capacity()`、`PutElem(i, value)`。
+- `CircularLinkedList<T>`、`DoublyLinkedList<T>`、`DoublyCircularLinkedList<T>` 还提供 `PutElem(i, value)`、`LocateElem(value)`、`PrevElem(value, result)`、`NextElem(value, result)`。
+- `SinglyLinkedList<T>` 当前只提供上述公共基础操作。
 
-| 接口 / API | 功能 / Purpose | 时间复杂度 / Time |
-| --- | --- | --- |
-| `SequentialList()` | 创建空表 / Create an empty list | O(1) |
-| `ClearList()` | 逻辑清空 / Logically clear the list | O(1) |
-| `ListEmpty()` | 判断是否为空 / Check whether empty | O(1) |
-| `ListLength()` | 获取长度 / Get the length | O(1) |
-| `Capacity()` | 获取容量 / Get the capacity | O(1) |
-| `GetElem(i, value)` | 读取第 `i` 个元素 / Read an element | O(1) |
-| `PutElem(i, value)` | 修改第 `i` 个元素 / Replace an element | O(1) |
-| `ListInsert(i, value)` | 在第 `i` 个位置插入 / Insert an element | O(n) |
-| `ListDelete(i, value)` | 删除第 `i` 个元素并返回其值 / Delete an element | O(n) |
+所有线性表的有效元素位序从 **1** 开始；插入位置为 `1` 至 `length + 1`，查询和删除位置为 `1` 至 `length`。按值查找返回首次匹配的位序，未找到返回 `0`；前驱和后继查询在表头、表尾处不跨越边界，即使底层是循环链表也一样。
 
-上述复杂度按元素复制与赋值为常数时间计算；扩容时需要 O(n) 次元素复制。`ClearList()` 仅将逻辑长度置零，保留底层容量与已分配的元素对象。
+**栈 / Stack**：`ClearStack()`、`StackEmpty()`、`StackLength()`、`Capacity()`、`GetTop(value)`、`Push(value)`、`Pop(value)`。固定容量满时，`Push` 返回 `false`。
 
-`GetElem`、`PutElem`、`ListInsert` 和 `ListDelete` 在位序无效时返回 `false`；在合法位序下，元素操作或内存分配仍可能抛出异常。当前实现要求 `T` 可默认构造、复制构造并复制赋值。
+**队列 / Queue**：`ClearQueue()`、`QueueEmpty()`、`QueueLength()`、`Capacity()`、`GetFront(value)`、`Enqueue(value)`、`Dequeue(value)`。`Queue<T>` 可通过构造函数参数自定义初始容量，默认值为 `8`。
 
+### 时间复杂度 / Time complexity
 
-### 单链表 / Singly Linked List
+| 数据结构 / Structure | 查询 / Read | 插入 / Insert | 删除 / Delete |
+| --- | --- | --- | --- |
+| 顺序表 | O(1) | O(n) | O(n) |
+| 单链表 | O(n) | O(n)，尾插 O(1) | O(n) |
+| 循环单链表 | O(n) | O(n)，尾插 O(1) | O(n) |
+| 双链表 | O(n) | O(n)，首尾插入 O(1) | O(n)，首尾删除 O(1) |
+| 双向循环链表 | O(n) | O(n)，首尾插入 O(1) | O(n)，首尾删除 O(1) |
+| 顺序栈 | 栈顶 O(1) | 入栈 O(1) | 出栈 O(1) |
+| 循环队列 | 队头 O(1) | 入队均摊 O(1) | 出队 O(1) |
 
-- 使用带头结点的单链表存储元素；保留 `tail` 尾指针和 `size` 长度记录。
-- **逻辑位序从 1 开始**；尾部插入为 O(1)，其余位置插入最坏为 O(n)。
-- 不依赖整数或员工等特定数据类型；暂不支持复制或移动链表对象。
+以上按单次元素复制、比较和赋值为常数时间估算。顺序表和循环队列扩容时需要 O(n) 时间；队列的均摊复杂度基于容量翻倍策略。链表清空为 O(n)，数组式顺序表、栈与队列的逻辑清空为 O(1)。
 
-| 接口 / API | 功能 / Purpose | 时间复杂度 / Time |
-| --- | --- | --- |
-| `SinglyLinkedList()` | 创建空链表 / Create an empty list | O(1) |
-| `~SinglyLinkedList()` | 释放全部结点 / Destroy the list | O(n) |
-| `ClearList()` | 清空链表 / Clear all nodes | O(n) |
-| `ListEmpty()` | 判断是否为空 / Check whether empty | O(1) |
-| `ListLength()` | 获取长度 / Get the length | O(1) |
-| `GetElem(i, value)` | 读取第 `i` 个元素 / Read an element | O(n) |
-| `ListInsert(i, value)` | 插入第 `i` 个位置 / Insert an element | O(n)，尾插 O(1) |
-| `ListDelete(i, value)` | 删除第 `i` 个元素 / Delete an element | O(n) |
-
-复杂度按元素复制与赋值为常数时间计算。位序无效时，增删读操作返回 `false`；正常位置仍可能因分配内存或复制元素而抛出异常。当前实现要求 `T` 可默认构造、复制构造并复制赋值。
+**类型与异常 / Type and exception notes**：当前模板实现要求 `T` 支持默认构造、复制构造和复制赋值；按值查找要求 `operator==`。对象暂不支持复制或移动。非法位序、空栈或空队列等情况由对应的 `bool` 操作返回 `false`；有效操作仍可能因内存分配或元素复制、赋值而抛出异常。
 
 ## 快速开始 / Quick Start
 
-只需支持 C++17 的编译器；也可以使用根目录的 CMake 配置进行本地构建检查。 / A C++17 compiler is sufficient; CMake is optional.
+### 直接使用 G++ / Direct compilation
 
-在仓库根目录新建临时文件 `demo.cpp`：
+在仓库根目录创建临时的 `demo.cpp`：
 
 ```cpp
 #include "sequential_list.h"
-#include "singly_linked_list.h"
+#include "doubly_linked_list.h"
+#include "stack.h"
+#include "queue.h"
 
 #include <iostream>
 
 int main() {
     dscpp::SequentialList<int> numbers;
-
     numbers.ListInsert(1, 10);
     numbers.ListInsert(2, 20);
-    numbers.ListInsert(2, 15);
+
+    dscpp::DoublyLinkedList<int> linked;
+    linked.ListInsert(1, 30);
+
+    dscpp::Stack<int> stack;
+    stack.Push(40);
+
+    dscpp::Queue<int> queue;
+    queue.Enqueue(50);
 
     int value = 0;
-    if (numbers.GetElem(2, value)) {
-        std::cout << value << '\n';  // 15
-    }
-
-    int deletedValue = 0;
-    numbers.ListDelete(2, deletedValue);
-
-    std::cout << numbers.ListLength() << '\n';  // 2
-
-    dscpp::SinglyLinkedList<int> linked;
-    linked.ListInsert(1, 30);
-    linked.ListInsert(2, 40);
-
-    if (linked.GetElem(2, value)) {
-        std::cout << value << '\n';  // 40
-    }
+    numbers.GetElem(2, value);
+    std::cout << value << '\n';  // 20
+    linked.GetElem(1, value);
+    std::cout << value << '\n';  // 30
+    stack.Pop(value);
+    std::cout << value << '\n';  // 40
+    queue.Dequeue(value);
+    std::cout << value << '\n';  // 50
 
     return 0;
 }
 ```
 
-使用 GCC / MinGW-w64 编译并运行：
+在仓库根目录编译：
 
 ```bash
 g++ -std=c++17 -Wall -Wextra -pedantic -Iinclude demo.cpp -o demo.exe
 ```
 
-在 Windows CMD 中运行 `demo.exe`；在 PowerShell 中运行 `./demo.exe`。
+Windows CMD 运行 `demo.exe`；PowerShell 运行 `./demo.exe`。
 
-> **模板实现说明 / Template note:** `sequential_list.h` 已引入相应的 `src/sequential_list.cpp` 模板定义。使用者只需包含头文件，**不要将模板 `.cpp` 再单独作为普通源文件编译**。复用时请保留 `include/` 与 `src/` 的相对目录关系。
+### CMake 本地构建检查 / Local CMake check
+
+要求 CMake 3.16+ 及 C++17 编译器。使用 MinGW-w64 的示例：
+
+```bash
+cmake -S . -B build -G "MinGW Makefiles"
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
+配置时默认启用 `DSCPP_BUILD_CHECK`（仅在独立构建本仓库时），在 `build/` 内生成一个用于检查全部七种数据结构的临时可执行程序；CTest 运行基础功能检查。该检查**不是完整的单元测试套件**，不会创建或要求提交 `tests/` 目录。
+
+如只需在其他 CMake 工程中引用此模板库：
+
+```cmake
+add_subdirectory(path/to/Data-Structures-CPP)
+target_link_libraries(your_target PRIVATE data_structures)
+```
+
+**模板实现说明 / Template implementation:** 每个 `.h` 都包含其对应的 `src/*.cpp` 模板定义。因此使用者只需 `#include` 相关头文件，**不要将这些模板 `.cpp` 文件再单独加入编译源文件列表**；复制或引用时须保持 `include/` 和 `src/` 的相对目录结构。
 
 ## 参考资料 / References
 
 1. 严蔚敏、吴伟民：《数据结构（C语言版）》——主要依据 / Primary textbook.
-2. 程杰：《大话数据结构》——概念辅助 / Supplementary explanations.
-3. Robert Sedgewick、Kevin Wayne：《算法（第4版）》——算法分析参考 / Algorithm analysis reference.
+2. 程杰：《大话数据结构》——概念辅助 / Supplementary reading.
+3. Robert Sedgewick、Kevin Wayne：《算法（第4版）》——算法与复杂度参考 / Algorithm reference.
 
-本仓库代码独立编写，不收录教材扫描件或未经授权的第三方代码。
+代码独立编写；本仓库不收录教材扫描件或未经授权的第三方代码。
 
 ## 许可证 / License
 
