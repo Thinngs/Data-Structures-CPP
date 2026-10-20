@@ -19,9 +19,12 @@ A beginner-friendly collection of data structures implemented from scratch in C+
 ```text
 Data-Structures-CPP/
 ├── include/
-│   └── sequential_list.h       # Public interface / 对外接口
+│   ├── sequential_list.h       # 顺序表接口 / Sequential list
+│   └── singly_linked_list.h    # 单链表接口 / Singly linked list
 ├── src/
-│   └── sequential_list.cpp     # Template implementation / 模板实现
+│   ├── sequential_list.cpp     # 顺序表模板实现
+│   └── singly_linked_list.cpp  # 单链表模板实现
+├── CMakeLists.txt              # 可选本地构建 / Optional local build
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -32,6 +35,7 @@ Data-Structures-CPP/
 | 数据结构 / Data structure | 文件 / Files | 状态 / Status |
 | --- | --- | --- |
 | 顺序表 / Sequential List | `sequential_list.h` · `sequential_list.cpp` | 已实现 / Implemented |
+| 单链表 / Singly Linked List | `singly_linked_list.h` · `singly_linked_list.cpp` | 已实现 / Implemented |
 
 其他数据结构将随学习进度逐步加入。 / More data structures will be added progressively.
 
@@ -58,14 +62,35 @@ Data-Structures-CPP/
 
 `GetElem`、`PutElem`、`ListInsert` 和 `ListDelete` 在位序无效时返回 `false`；在合法位序下，元素操作或内存分配仍可能抛出异常。当前实现要求 `T` 可默认构造、复制构造并复制赋值。
 
+
+### 单链表 / Singly Linked List
+
+- 使用带头结点的单链表存储元素；保留 `tail` 尾指针和 `size` 长度记录。
+- **逻辑位序从 1 开始**；尾部插入为 O(1)，其余位置插入最坏为 O(n)。
+- 不依赖整数或员工等特定数据类型；暂不支持复制或移动链表对象。
+
+| 接口 / API | 功能 / Purpose | 时间复杂度 / Time |
+| --- | --- | --- |
+| `SinglyLinkedList()` | 创建空链表 / Create an empty list | O(1) |
+| `~SinglyLinkedList()` | 释放全部结点 / Destroy the list | O(n) |
+| `ClearList()` | 清空链表 / Clear all nodes | O(n) |
+| `ListEmpty()` | 判断是否为空 / Check whether empty | O(1) |
+| `ListLength()` | 获取长度 / Get the length | O(1) |
+| `GetElem(i, value)` | 读取第 `i` 个元素 / Read an element | O(n) |
+| `ListInsert(i, value)` | 插入第 `i` 个位置 / Insert an element | O(n)，尾插 O(1) |
+| `ListDelete(i, value)` | 删除第 `i` 个元素 / Delete an element | O(n) |
+
+复杂度按元素复制与赋值为常数时间计算。位序无效时，增删读操作返回 `false`；正常位置仍可能因分配内存或复制元素而抛出异常。当前实现要求 `T` 可默认构造、复制构造并复制赋值。
+
 ## 快速开始 / Quick Start
 
-无需额外构建系统，只需支持 C++17 的编译器。 / Only a C++17-compatible compiler is required.
+只需支持 C++17 的编译器；也可以使用根目录的 CMake 配置进行本地构建检查。 / A C++17 compiler is sufficient; CMake is optional.
 
 在仓库根目录新建临时文件 `demo.cpp`：
 
 ```cpp
 #include "sequential_list.h"
+#include "singly_linked_list.h"
 
 #include <iostream>
 
@@ -85,6 +110,15 @@ int main() {
     numbers.ListDelete(2, deletedValue);
 
     std::cout << numbers.ListLength() << '\n';  // 2
+
+    dscpp::SinglyLinkedList<int> linked;
+    linked.ListInsert(1, 30);
+    linked.ListInsert(2, 40);
+
+    if (linked.GetElem(2, value)) {
+        std::cout << value << '\n';  // 40
+    }
+
     return 0;
 }
 ```
